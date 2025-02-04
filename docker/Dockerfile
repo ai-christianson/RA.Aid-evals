@@ -1,4 +1,4 @@
-FROM python:3.13-slim-bookworm
+FROM python:3.12-slim-bookworm
 
 # Build arguments for repositories and commits
 ARG RAAID_COMMIT
@@ -10,7 +10,13 @@ ARG RAAID_SWE_BENCH_REPO
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
+    curl \
+    ripgrep \
+    fzf \
     && rm -rf /var/lib/apt/lists/*
+
+RUN pip install uv
+RUN curl -fsSL https://pyenv.run | bash
 
 # Create source directories
 WORKDIR /app
@@ -45,6 +51,8 @@ RUN cd ra-aid && \
 # Install SWE-bench
 RUN cd swe-bench && \
     pip install --no-cache-dir -e .
+
+RUN mkdir -p /app/swe-bench/predictions/ra_aid_predictions
 
 # Set working directory to swe-bench as that's our primary project
 WORKDIR /app/swe-bench

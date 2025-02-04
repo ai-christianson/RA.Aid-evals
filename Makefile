@@ -20,7 +20,7 @@ DOCKER_ASSETS_DIR = docker/.assets
 RA_AID_ASSETS_DIR = $(DOCKER_ASSETS_DIR)/ra-aid
 SWE_BENCH_ASSETS_DIR = $(DOCKER_ASSETS_DIR)/swe-bench
 
-.PHONY: swe-bench-image clean-assets sync-local-ra-aid sync-local-swe-bench
+.PHONY: swe-bench-image clean-assets sync-local-ra-aid sync-local-swe-bench patch-swe-bench-pyproject
 
 clean-assets:
 	rm -rf $(DOCKER_ASSETS_DIR)
@@ -60,7 +60,12 @@ ifneq ($(RAAID_SWE_BENCH_LOCAL_DIR),)
 		$(RAAID_SWE_BENCH_LOCAL_DIR)/ $(SWE_BENCH_ASSETS_DIR)/
 endif
 
-swe-bench-image: clean-assets sync-local-ra-aid sync-local-swe-bench
+patch-swe-bench-pyproject:
+	@if [ -f "$(SWE_BENCH_ASSETS_DIR)/pyproject.toml" ]; then \
+		sed -i '/^ra-aid = /c\ra-aid = { path = "/app/ra-aid", develop = true }' $(SWE_BENCH_ASSETS_DIR)/pyproject.toml; \
+	fi
+
+swe-bench-image: clean-assets sync-local-ra-aid sync-local-swe-bench patch-swe-bench-pyproject
 	docker build \
 		--build-arg RAAID_COMMIT=$(RAAID_COMMIT) \
 		--build-arg RAAID_SWE_BENCH_COMMIT=$(RAAID_SWE_BENCH_COMMIT) \
