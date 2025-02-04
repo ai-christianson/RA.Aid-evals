@@ -3,6 +3,10 @@ RAAID_COMMIT ?= master
 RAAID_SWE_BENCH_COMMIT ?= master
 RAAID_LOCAL_DIR ?=
 
+# Repository URLs
+RAAID_REPO ?= https://github.com/ai-christianson/RA.Aid.git
+RAAID_SWE_BENCH_REPO ?= https://github.com/ariel-frischer/RA.Aid-swe-bench.git
+
 # Docker image name
 IMAGE_NAME = ra-aid-swe-bench
 # Extract first 7 characters of each commit
@@ -37,6 +41,8 @@ swe-bench-image: clean-assets sync-local-ra-aid
 	docker build \
 		--build-arg RAAID_COMMIT=$(RAAID_COMMIT) \
 		--build-arg RAAID_SWE_BENCH_COMMIT=$(RAAID_SWE_BENCH_COMMIT) \
+		--build-arg RAAID_REPO=$(RAAID_REPO) \
+		--build-arg RAAID_SWE_BENCH_REPO=$(RAAID_SWE_BENCH_REPO) \
 		-t $(FULL_IMAGE_NAME) \
 		-f docker/Dockerfile \
 		.
