@@ -11,8 +11,8 @@ RAAID_SWE_BENCH_REPO ?= https://github.com/ariel-frischer/RA.Aid-swe-bench.git
 # Docker image name
 IMAGE_NAME = ra-aid-swe-bench
 # Extract first 7 characters of each commit
-RAAID_COMMIT_SHORT = $(if $(RAAID_LOCAL_DIR),local-$(shell find $(RAAID_LOCAL_DIR) -type f -exec sha256sum {} \; | sort | sha256sum | cut -c1-7),$(shell echo $(RAAID_COMMIT) | cut -c1-7))
-RAAID_SWE_BENCH_COMMIT_SHORT = $(if $(RAAID_SWE_BENCH_LOCAL_DIR),local-$(shell find $(RAAID_SWE_BENCH_LOCAL_DIR) -type f -exec sha256sum {} \; | sort | sha256sum | cut -c1-7),$(shell echo $(RAAID_SWE_BENCH_COMMIT) | cut -c1-7))
+RAAID_COMMIT_SHORT = $(if $(RAAID_LOCAL_DIR),local-$(shell date +%Y%m%d-%H%M%S),$(shell echo $(RAAID_COMMIT) | cut -c1-7))
+RAAID_SWE_BENCH_COMMIT_SHORT = $(if $(RAAID_SWE_BENCH_LOCAL_DIR),local-$(shell date +%Y%m%d-%H%M%S),$(shell echo $(RAAID_SWE_BENCH_COMMIT) | cut -c1-7))
 FULL_IMAGE_NAME = $(IMAGE_NAME):$(RAAID_COMMIT_SHORT)-$(RAAID_SWE_BENCH_COMMIT_SHORT)
 
 # Directory for Docker build assets (created on the fly)
