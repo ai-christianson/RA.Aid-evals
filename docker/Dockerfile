@@ -25,10 +25,14 @@ RUN if [ ! -d "ra-aid/.git" ] && [ ! -f "ra-aid/pyproject.toml" ]; then \
     git checkout ${RAAID_COMMIT}; \
     fi
 
-# Clone swe-bench repository
-RUN git clone ${RAAID_SWE_BENCH_REPO} swe-bench && \
+# Copy local swe-bench if available, otherwise clone from repository
+COPY docker/.assets/swe-bench swe-bench/ 2>/dev/null || true
+RUN if [ ! -d "swe-bench/.git" ] && [ ! -f "swe-bench/pyproject.toml" ]; then \
+    rm -rf swe-bench/* && \
+    git clone ${RAAID_SWE_BENCH_REPO} swe-bench && \
     cd swe-bench && \
-    git checkout ${RAAID_SWE_BENCH_COMMIT}
+    git checkout ${RAAID_SWE_BENCH_COMMIT}; \
+    fi
 
 # Install pip-tools for handling requirements
 RUN pip install --no-cache-dir pip-tools
