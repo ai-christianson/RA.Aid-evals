@@ -17,8 +17,8 @@ WORKDIR /app
 RUN mkdir -p ra-aid swe-bench
 
 # Copy local ra-aid if available, otherwise clone from repository
-COPY docker/.assets/ra-aid ra-aid/ 2>/dev/null || true
-RUN if [ ! -d "ra-aid/.git" ] && [ ! -f "ra-aid/pyproject.toml" ]; then \
+COPY docker/.assets/ra-aid ra-aid/
+RUN if [ ! -f "ra-aid/pyproject.toml" ]; then \
     rm -rf ra-aid/* && \
     git clone ${RAAID_REPO} ra-aid && \
     cd ra-aid && \
@@ -26,8 +26,8 @@ RUN if [ ! -d "ra-aid/.git" ] && [ ! -f "ra-aid/pyproject.toml" ]; then \
     fi
 
 # Copy local swe-bench if available, otherwise clone from repository
-COPY docker/.assets/swe-bench swe-bench/ 2>/dev/null || true
-RUN if [ ! -d "swe-bench/.git" ] && [ ! -f "swe-bench/pyproject.toml" ]; then \
+COPY docker/.assets/swe-bench swe-bench/
+RUN if [ ! -f "swe-bench/pyproject.toml" ]; then \
     rm -rf swe-bench/* && \
     git clone ${RAAID_SWE_BENCH_REPO} swe-bench && \
     cd swe-bench && \
