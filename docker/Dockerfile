@@ -1,1 +1,4 @@
 FROM python:3.13-slim-bookworm
+
+ARG RAAID_COMMIT
+ARG RAAID_SWE_BENCH_COMMIT
