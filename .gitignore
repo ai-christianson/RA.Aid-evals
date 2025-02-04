@@ -1,2 +1,22 @@
 # Docker build assets
 docker/.assets/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache/
+*.egg-info/
+.eggs/
+*.egg
+.venv/
+venv/
+
+# Coverage reports
+htmlcov/
+.coverage
+
+# Logs
+logs/

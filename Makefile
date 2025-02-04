@@ -36,6 +36,9 @@ ifneq ($(RAAID_LOCAL_DIR),)
 		--exclude '*.pyd' \
 		--exclude '.pytest_cache' \
 		--exclude '*.egg-info' \
+		--exclude 'logs' \
+		--exclude '.venv' \
+		--exclude 'htmlcov' \
 		$(RAAID_LOCAL_DIR)/ $(RA_AID_ASSETS_DIR)/
 endif
 
@@ -50,6 +53,10 @@ ifneq ($(RAAID_SWE_BENCH_LOCAL_DIR),)
 		--exclude '*.pyd' \
 		--exclude '.pytest_cache' \
 		--exclude '*.egg-info' \
+		--exclude 'repos' \
+		--exclude 'repos/*' \
+		--exclude 'logs' \
+		--exclude '.venv' \
 		$(RAAID_SWE_BENCH_LOCAL_DIR)/ $(SWE_BENCH_ASSETS_DIR)/
 endif
 
