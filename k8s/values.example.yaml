@@ -1,0 +1,24 @@
+job:
+  name: ra-aid-eval
+  namespace: ra-aid-evals  # Namespace for evaluation jobs
+  resources:
+    requests:
+      memory: "4Gi"
+      cpu: "2"
+    limits:
+      memory: "8Gi"
+      cpu: "4"
+  backoffLimit: 2  # Number of retries before considering job as failed
+  ttlSecondsAfterFinished: 3600  # Cleanup completed jobs after 1 hour
+
+image:
+  # These will be overridden by the actual values from your build
+  repository: ra-aid-swe-bench
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# The following environment variables must be set before running the playbook:
+# Required API keys:
+# - ANTHROPIC_API_KEY
+# - OPENAI_API_KEY
+# - TAVILY_API_KEY

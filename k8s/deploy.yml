@@ -1,0 +1,66 @@
+---
+- name: Deploy RA.Aid evaluation job to Kubernetes
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_files:
+    - "{{ values_file | default('values.yaml') }}"
+
+  tasks:
+    - name: Ensure namespace exists
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "{{ job.namespace }}"
+
+    - name: Create secrets from environment variables
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: api-keys
+            namespace: "{{ job.namespace }}"
+          type: Opaque
+          stringData:
+            ANTHROPIC_API_KEY: "{{ lookup('env', 'ANTHROPIC_API_KEY') }}"
+            OPENAI_API_KEY: "{{ lookup('env', 'OPENAI_API_KEY') }}"
+            TAVILY_API_KEY: "{{ lookup('env', 'TAVILY_API_KEY') }}"
+
+    - name: Deploy evaluation job
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: "{{ job.name }}"
+            namespace: "{{ job.namespace }}"
+          spec:
+            backoffLimit: "{{ job.backoffLimit }}"
+            ttlSecondsAfterFinished: "{{ job.ttlSecondsAfterFinished }}"
+            template:
+              spec:
+                containers:
+                - name: ra-aid-eval
+                  image: "{{ image.repository }}:{{ image.tag }}"
+                  imagePullPolicy: "{{ image.pullPolicy }}"
+                  command: ["/bin/bash", "-c"]
+                  args:
+                    - "python -m swe_lite_ra_aid.main"
+                  resources:
+                    requests:
+                      memory: "{{ job.resources.requests.memory }}"
+                      cpu: "{{ job.resources.requests.cpu }}"
+                    limits:
+                      memory: "{{ job.resources.limits.memory }}"
+                      cpu: "{{ job.resources.limits.cpu }}"
+                  envFrom:
+                    - secretRef:
+                        name: api-keys
+                restartPolicy: Never
