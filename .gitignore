@@ -20,3 +20,6 @@ htmlcov/
 
 # Logs
 logs/
+
+# Kubernetes
+k8s/values.yaml
