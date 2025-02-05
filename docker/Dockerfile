@@ -13,6 +13,8 @@ RUN apt-get update && apt-get install -y \
     curl \
     ripgrep \
     fzf \
+    awscli \
+    jq \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install uv
@@ -53,6 +55,10 @@ RUN cd swe-bench && \
     pip install --no-cache-dir -e .
 
 RUN mkdir -p /app/swe-bench/predictions/ra_aid_predictions
+
+# Create script for generating metadata
+COPY scripts/generate_metadata.sh /usr/local/bin/generate_metadata
+RUN chmod +x /usr/local/bin/generate_metadata
 
 # Copy and make run script executable
 COPY run.sh /app/

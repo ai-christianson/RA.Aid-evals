@@ -22,3 +22,15 @@ image:
 # - ANTHROPIC_API_KEY
 # - OPENAI_API_KEY
 # - TAVILY_API_KEY
+
+# S3 configuration for storing evaluation results
+s3:
+  enabled: false  # Set to true to enable S3 uploads
+  bucket: "my-bucket"  # S3 bucket name
+  endpoint_url: "https://s3.us-west-002.backblazeb2.com"  # S3-compatible endpoint URL
+  region: "us-west-002"  # S3 region
+  path_prefix: "evals"  # Base path prefix for all uploads
+
+  # The following environment variables must be set in secrets when s3.enabled is true:
+  # - AWS_ACCESS_KEY_ID
+  # - AWS_SECRET_ACCESS_KEY

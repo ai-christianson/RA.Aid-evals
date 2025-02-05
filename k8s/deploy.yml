@@ -17,7 +17,7 @@
           metadata:
             name: "{{ job.namespace }}"
 
-    - name: Create secrets from environment variables
+    - name: Create API key secrets from environment variables
       kubernetes.core.k8s:
         state: present
         definition:
@@ -31,6 +31,24 @@
             ANTHROPIC_API_KEY: "{{ lookup('env', 'ANTHROPIC_API_KEY') }}"
             OPENAI_API_KEY: "{{ lookup('env', 'OPENAI_API_KEY') }}"
             TAVILY_API_KEY: "{{ lookup('env', 'TAVILY_API_KEY') }}"
+
+    - name: Create S3 secrets from environment variables
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: ra-aid-secrets
+            namespace: "{{ job.namespace }}"
+          type: Opaque
+          stringData:
+            aws_access_key_id: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') | default('', true) }}"
+            aws_secret_access_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') | default('', true) }}"
+            anthropic_api_key: "{{ lookup('env', 'ANTHROPIC_API_KEY') }}"
+            openai_api_key: "{{ lookup('env', 'OPENAI_API_KEY') }}"
+            tavily_api_key: "{{ lookup('env', 'TAVILY_API_KEY') }}"
+      when: s3.enabled | bool
 
     - name: Deploy evaluation job
       kubernetes.core.k8s:
