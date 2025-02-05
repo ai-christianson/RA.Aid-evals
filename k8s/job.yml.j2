@@ -12,9 +12,7 @@ spec:
       - name: ra-aid-eval
         image: {{ image.repository }}:{{ image.tag }}
         imagePullPolicy: {{ image.pullPolicy }}
-        command: ["/bin/bash", "-c"]
-        args:
-          - "python -m swe_lite_ra_aid.main"
+        command: ["/app/run.sh"]
         resources:
           requests:
             memory: {{ job.resources.requests.memory }}

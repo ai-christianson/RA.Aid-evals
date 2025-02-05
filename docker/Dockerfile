@@ -23,7 +23,7 @@ WORKDIR /app
 RUN mkdir -p ra-aid swe-bench
 
 # Copy local ra-aid if available, otherwise clone from repository
-COPY docker/.assets/ra-aid ra-aid/
+COPY .assets/ra-aid ra-aid/
 RUN if [ ! -f "ra-aid/pyproject.toml" ]; then \
     rm -rf ra-aid/* && \
     git clone ${RAAID_REPO} ra-aid && \
@@ -32,7 +32,7 @@ RUN if [ ! -f "ra-aid/pyproject.toml" ]; then \
     fi
 
 # Copy local swe-bench if available, otherwise clone from repository
-COPY docker/.assets/swe-bench swe-bench/
+COPY .assets/swe-bench swe-bench/
 RUN if [ ! -f "swe-bench/pyproject.toml" ]; then \
     rm -rf swe-bench/* && \
     git clone ${RAAID_SWE_BENCH_REPO} swe-bench && \
@@ -53,6 +53,10 @@ RUN cd swe-bench && \
     pip install --no-cache-dir -e .
 
 RUN mkdir -p /app/swe-bench/predictions/ra_aid_predictions
+
+# Copy and make run script executable
+COPY run.sh /app/
+RUN chmod +x /app/run.sh
 
 # Set working directory to swe-bench as that's our primary project
 WORKDIR /app/swe-bench

@@ -73,5 +73,5 @@ swe-bench-image: clean-assets sync-local-ra-aid sync-local-swe-bench patch-swe-b
 		--build-arg RAAID_SWE_BENCH_REPO=$(RAAID_SWE_BENCH_REPO) \
 		-t $(FULL_IMAGE_NAME) \
 		-f docker/Dockerfile \
-		.
+		docker/
 	$(MAKE) clean-assets
