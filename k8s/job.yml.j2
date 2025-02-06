@@ -49,7 +49,7 @@ spec:
                   name: ra-aid-secrets
                   key: tavily_api_key
             - name: S3_ENABLED
-              value: "{{ s3.enabled | default(false) }}"
+              value: "{{ (s3.enabled | default(false)) | lower }}"
             - name: S3_BUCKET_NAME
               value: "{{ s3.bucket | default('') }}"
             - name: S3_ENDPOINT_URL
