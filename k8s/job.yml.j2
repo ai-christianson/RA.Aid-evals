@@ -30,9 +30,9 @@ spec:
                 name: api-keys
           env:
             - name: IMAGE_NAME
-              value: "{{ '{{' }} .Values.image.repository {{ '}}' }}"
+              value: "{{ image.repository }}"
             - name: IMAGE_TAG
-              value: "{{ '{{' }} .Values.image.tag {{ '}}' }}"
+              value: "{{ image.tag }}"
             - name: ANTHROPIC_API_KEY
               valueFrom:
                 secretKeyRef:
@@ -49,15 +49,15 @@ spec:
                   name: ra-aid-secrets
                   key: tavily_api_key
             - name: S3_ENABLED
-              value: "{{ '{{' }} .Values.s3.enabled | toString {{ '}}' }}"
+              value: "{{ s3.enabled | default(false) }}"
             - name: S3_BUCKET_NAME
-              value: "{{ '{{' }} .Values.s3.bucket {{ '}}' }}"
+              value: "{{ s3.bucket | default('') }}"
             - name: S3_ENDPOINT_URL
-              value: "{{ '{{' }} .Values.s3.endpoint_url {{ '}}' }}"
+              value: "{{ s3.endpoint_url | default('') }}"
             - name: S3_PATH_PREFIX
-              value: "{{ '{{' }} .Values.s3.path_prefix {{ '}}' }}"
+              value: "{{ s3.path_prefix | default('') }}"
             - name: AWS_DEFAULT_REGION
-              value: "{{ '{{' }} .Values.s3.region {{ '}}' }}"
+              value: "{{ s3.region | default('') }}"
             - name: AWS_RETRY_MODE
               value: "standard"
             - name: AWS_MAX_ATTEMPTS
