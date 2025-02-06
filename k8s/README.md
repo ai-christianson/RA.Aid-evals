@@ -31,6 +31,17 @@ This directory contains the necessary files to run RA.Aid evaluations as Kuberne
    export TAVILY_API_KEY='your-key-here'
    ```
 
+## Configuration
+
+1. Copy the example config file to create your own:
+   ```bash
+   cp config.py.example config.py
+   ```
+
+2. Edit `config.py` with your desired configuration settings.
+
+The `config.py` file will be mounted into the container at runtime and will override the default configuration in the image. This allows you to customize the behavior without rebuilding the image.
+
 ## Running the Evaluation
 
 1. Deploy the job:

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: swe-bench-config
+  namespace: {{ job.namespace }}
+data:
+  config.py: |
+{{ config_py_content | indent(4, True) }}

@@ -50,6 +50,30 @@
             tavily_api_key: "{{ lookup('env', 'TAVILY_API_KEY') }}"
       when: s3.enabled | bool
 
+    - name: Check if config.py exists
+      stat:
+        path: "config.py"
+      register: config_file
+
+    - name: Fail if config.py doesn't exist
+      fail:
+        msg: "config.py not found in k8s directory. Please copy config.py.example to config.py and modify as needed."
+      when: not config_file.stat.exists
+
+    - name: Read config.py content
+      slurp:
+        src: "config.py"
+      register: config_py_slurp
+
+    - name: Set config.py content variable
+      set_fact:
+        config_py_content: "{{ config_py_slurp['content'] | b64decode }}"
+
+    - name: Create ConfigMap for SWE-bench config
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'configmap.yml.j2') | from_yaml }}"
+
     - name: Deploy evaluation job
       kubernetes.core.k8s:
         state: present

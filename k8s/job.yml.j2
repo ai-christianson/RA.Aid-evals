@@ -13,6 +13,9 @@ spec:
           emptyDir: {}
         - name: docker-storage
           emptyDir: {}
+        - name: config-volume
+          configMap:
+            name: swe-bench-config
       containers:
         - name: ra-aid-eval
           image: {{ image.repository }}:{{ image.tag }}
@@ -79,6 +82,9 @@ spec:
           volumeMounts:
             - name: docker-socket
               mountPath: /dind-socket
+            - name: config-volume
+              mountPath: /app/swe-bench/swe_lite_ra_aid/config.py
+              subPath: config.py
         - name: dind-daemon
           image: docker:20.10-dind
           securityContext:
