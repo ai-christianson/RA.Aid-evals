@@ -8,66 +8,85 @@ spec:
   ttlSecondsAfterFinished: {{ job.ttlSecondsAfterFinished }}
   template:
     spec:
+      volumes:
+        - name: docker-socket
+          emptyDir: {}
+        - name: docker-storage
+          emptyDir: {}
       containers:
-      - name: ra-aid-eval
-        image: {{ image.repository }}:{{ image.tag }}
-        imagePullPolicy: {{ image.pullPolicy }}
-        command: ["/app/run.sh"]
-        resources:
-          requests:
-            memory: {{ job.resources.requests.memory }}
-            cpu: {{ job.resources.requests.cpu }}
-          limits:
-            memory: {{ job.resources.limits.memory }}
-            cpu: {{ job.resources.limits.cpu }}
-        envFrom:
-          - secretRef:
-              name: api-keys
-        env:
-          - name: IMAGE_NAME
-            value: "{{ '{{' }} .Values.image.repository {{ '}}' }}"
-          - name: IMAGE_TAG
-            value: "{{ '{{' }} .Values.image.tag {{ '}}' }}"
-          - name: ANTHROPIC_API_KEY
-            valueFrom:
-              secretKeyRef:
-                name: ra-aid-secrets
-                key: anthropic_api_key
-          - name: OPENAI_API_KEY
-            valueFrom:
-              secretKeyRef:
-                name: ra-aid-secrets
-                key: openai_api_key
-          - name: TAVILY_API_KEY
-            valueFrom:
-              secretKeyRef:
-                name: ra-aid-secrets
-                key: tavily_api_key
-          # S3 Configuration
-          - name: S3_ENABLED
-            value: "{{ '{{' }} .Values.s3.enabled | toString {{ '}}' }}"
-          - name: S3_BUCKET_NAME
-            value: "{{ '{{' }} .Values.s3.bucket {{ '}}' }}"
-          - name: S3_ENDPOINT_URL
-            value: "{{ '{{' }} .Values.s3.endpoint_url {{ '}}' }}"
-          - name: S3_PATH_PREFIX
-            value: "{{ '{{' }} .Values.s3.path_prefix {{ '}}' }}"
-          - name: AWS_DEFAULT_REGION
-            value: "{{ '{{' }} .Values.s3.region {{ '}}' }}"
-          - name: AWS_RETRY_MODE
-            value: "standard"
-          - name: AWS_MAX_ATTEMPTS
-            value: "3"
-          - name: AWS_ACCESS_KEY_ID
-            valueFrom:
-              secretKeyRef:
-                name: ra-aid-secrets
-                key: aws_access_key_id
-                optional: true
-          - name: AWS_SECRET_ACCESS_KEY
-            valueFrom:
-              secretKeyRef:
-                name: ra-aid-secrets
-                key: aws_secret_access_key
-                optional: true
+        - name: ra-aid-eval
+          image: {{ image.repository }}:{{ image.tag }}
+          imagePullPolicy: {{ image.pullPolicy }}
+          command: ["/app/run.sh"]
+          resources:
+            requests:
+              memory: {{ job.resources.requests.memory }}
+              cpu: {{ job.resources.requests.cpu }}
+            limits:
+              memory: {{ job.resources.limits.memory }}
+              cpu: {{ job.resources.limits.cpu }}
+          envFrom:
+            - secretRef:
+                name: api-keys
+          env:
+            - name: IMAGE_NAME
+              value: "{{ '{{' }} .Values.image.repository {{ '}}' }}"
+            - name: IMAGE_TAG
+              value: "{{ '{{' }} .Values.image.tag {{ '}}' }}"
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ra-aid-secrets
+                  key: anthropic_api_key
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ra-aid-secrets
+                  key: openai_api_key
+            - name: TAVILY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ra-aid-secrets
+                  key: tavily_api_key
+            - name: S3_ENABLED
+              value: "{{ '{{' }} .Values.s3.enabled | toString {{ '}}' }}"
+            - name: S3_BUCKET_NAME
+              value: "{{ '{{' }} .Values.s3.bucket {{ '}}' }}"
+            - name: S3_ENDPOINT_URL
+              value: "{{ '{{' }} .Values.s3.endpoint_url {{ '}}' }}"
+            - name: S3_PATH_PREFIX
+              value: "{{ '{{' }} .Values.s3.path_prefix {{ '}}' }}"
+            - name: AWS_DEFAULT_REGION
+              value: "{{ '{{' }} .Values.s3.region {{ '}}' }}"
+            - name: AWS_RETRY_MODE
+              value: "standard"
+            - name: AWS_MAX_ATTEMPTS
+              value: "3"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: ra-aid-secrets
+                  key: aws_access_key_id
+                  optional: true
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ra-aid-secrets
+                  key: aws_secret_access_key
+                  optional: true
+            - name: DOCKER_HOST
+              value: "unix:///dind-socket/docker.sock"
+          volumeMounts:
+            - name: docker-socket
+              mountPath: /dind-socket
+        - name: dind-daemon
+          image: docker:20.10-dind
+          securityContext:
+            privileged: true
+          args: ["--host=unix:///dind-socket/docker.sock"]
+          volumeMounts:
+            - name: docker-socket
+              mountPath: /dind-socket
+            - name: docker-storage
+              mountPath: /var/lib/docker
       restartPolicy: Never

@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     fzf \
     awscli \
     jq \
+    docker.io \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install uv
