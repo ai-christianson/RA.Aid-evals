@@ -21,6 +21,12 @@ RUN apt-get update && apt-get install -y \
 RUN pip install uv
 RUN curl -fsSL https://pyenv.run | bash
 
+# Set up pyenv environment
+ENV PYENV_ROOT="/root/.pyenv"
+ENV PATH="$PYENV_ROOT/bin:$PATH"
+RUN echo 'eval "$(pyenv init -)"' >> /root/.bashrc && \
+    echo 'eval "$(pyenv virtualenv-init -)"' >> /root/.bashrc
+
 # Create source directories
 WORKDIR /app
 RUN mkdir -p ra-aid swe-bench

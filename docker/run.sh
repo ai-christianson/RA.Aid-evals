@@ -2,6 +2,12 @@
 
 set -e
 
+# Initialize pyenv
+export PYENV_ROOT="/root/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+
 # Check S3 configuration if enabled
 if [ "${S3_ENABLED}" = "true" ]; then
     if [ -z "${S3_BUCKET_NAME}" ] || [ -z "${S3_ENDPOINT_URL}" ]; then
