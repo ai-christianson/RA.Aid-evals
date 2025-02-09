@@ -1,6 +1,8 @@
 job:
   name: ra-aid-eval
   namespace: ra-aid-evals  # Namespace for evaluation jobs
+  nodeAffinity:
+    zone: us-east-dc-cygnus  # Zone for node scheduling
   resources:
     requests:
       memory: "4Gi"

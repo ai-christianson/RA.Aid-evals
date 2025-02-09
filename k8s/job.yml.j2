@@ -8,6 +8,15 @@ spec:
   ttlSecondsAfterFinished: {{ job.ttlSecondsAfterFinished }}
   template:
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                - {{ job.nodeAffinity.zone | default('us-east-dc-cygnus') }}
       volumes:
         - name: docker-socket
           emptyDir: {}

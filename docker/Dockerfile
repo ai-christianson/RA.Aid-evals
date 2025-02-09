@@ -16,6 +16,13 @@ RUN apt-get update && apt-get install -y \
     awscli \
     jq \
     docker.io \
+    libbz2-dev \
+    libncurses-dev \
+    libreadline-dev \
+    libssl-dev \
+    libsqlite3-dev \
+    zlib1g-dev \
+    liblzma-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install uv
@@ -26,6 +33,11 @@ ENV PYENV_ROOT="/root/.pyenv"
 ENV PATH="$PYENV_ROOT/bin:$PATH"
 RUN echo 'eval "$(pyenv init -)"' >> /root/.bashrc && \
     echo 'eval "$(pyenv virtualenv-init -)"' >> /root/.bashrc
+
+# Install required Python versions
+RUN pyenv install --skip-existing 3.5.10 && \
+    pyenv install --skip-existing 3.6.15 && \
+    pyenv rehash
 
 # Create source directories
 WORKDIR /app
