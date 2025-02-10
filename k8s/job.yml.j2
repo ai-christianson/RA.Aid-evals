@@ -29,6 +29,9 @@ spec:
         - name: ra-aid-eval
           image: {{ image.repository }}:{{ image.tag }}
           imagePullPolicy: {{ image.pullPolicy }}
+          securityContext:
+            capabilities:
+              add: ["SYS_PTRACE"]
           command: ["/app/run.sh"]
           resources:
             requests:
