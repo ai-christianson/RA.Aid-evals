@@ -8,6 +8,8 @@ spec:
   ttlSecondsAfterFinished: {{ job.ttlSecondsAfterFinished }}
   template:
     spec:
+      shareProcessNamespace: true
+      terminationGracePeriodSeconds: 30
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

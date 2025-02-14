@@ -2,6 +2,17 @@
 
 set -e
 
+# Setup cleanup trap
+cleanup() {
+    echo "Cleaning up..."
+    if pgrep dockerd > /dev/null; then
+        echo "Shutting down Docker daemon..."
+        pkill dockerd
+        sleep 3  # Give Docker daemon time to shutdown gracefully
+    fi
+}
+trap cleanup EXIT
+
 # Initialize pyenv
 export PYENV_ROOT="/root/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
@@ -72,6 +83,10 @@ if [ "${S3_ENABLED}" = "true" ]; then
     # Upload evaluation output log
     aws s3 cp --endpoint-url "${S3_ENDPOINT_URL}" \
         output-eval.log "s3://${S3_BUCKET_NAME}/${RUN_DIR}/output-eval.log"
+
+    # Sync predictions directory
+    aws s3 sync --endpoint-url "${S3_ENDPOINT_URL}" \
+        predictions/ "s3://${S3_BUCKET_NAME}/${RUN_DIR}/predictions/" || echo "Warning: Failed to upload predictions"
     
     echo "S3 upload completed successfully"
 fi

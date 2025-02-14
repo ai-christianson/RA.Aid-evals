@@ -1,0 +1,19 @@
+---
+- name: Check if config.py exists
+  stat:
+    path: "{{ playbook_dir }}/../k8s/config.py"
+  register: config_file
+
+- name: Fail if config.py doesn't exist
+  fail:
+    msg: "config.py not found in k8s directory. Please copy config.py.example to config.py and modify as needed."
+  when: not config_file.stat.exists
+
+- name: Read config.py content
+  slurp:
+    src: "{{ playbook_dir }}/../k8s/config.py"
+  register: config_py_slurp
+
+- name: Set config.py content variable
+  set_fact:
+    config_py_content: "{{ config_py_slurp['content'] | b64decode }}"
