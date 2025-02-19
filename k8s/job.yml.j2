@@ -52,6 +52,8 @@ spec:
               value: "{{ image.repository }}"
             - name: IMAGE_TAG
               value: "{{ image.tag }}"
+            - name: AIDER_FLAGS
+              value: "--no-detect-urls"
             - name: ANTHROPIC_API_KEY
               valueFrom:
                 secretKeyRef:

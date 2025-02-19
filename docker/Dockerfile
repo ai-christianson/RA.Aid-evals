@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
     awscli \
     jq \
     docker.io \
+    procps \
     libbz2-dev \
     libncurses-dev \
     libreadline-dev \
