@@ -7,6 +7,7 @@ spec:
   completions: {{ (job.numTasks / job.batchSize) | round | int }}
   parallelism: {{ job.parallelism | default(1) }}
   backoffLimit: {{ job.backoffLimit }}
+  completionMode: Indexed
   ttlSecondsAfterFinished: {{ job.ttlSecondsAfterFinished }}
   template:
     spec:
@@ -22,10 +23,12 @@ spec:
                 values:
                 - {{ job.nodeAffinity.zone | default('us-east-dc-cygnus') }}
       volumes:
+{% if job.evalEnabled | default('true') | lower == 'true' %}
         - name: docker-socket
           emptyDir: {}
         - name: docker-storage
           emptyDir: {}
+{% endif %}
         - name: config-volume
           configMap:
             name: swe-bench-config
@@ -107,14 +110,19 @@ spec:
                   name: ra-aid-secrets
                   key: aws_secret_access_key
                   optional: true
+{% if job.evalEnabled | default('true') | lower == 'true' %}
             - name: DOCKER_HOST
               value: "unix:///dind-socket/docker.sock"
+{% endif %}
           volumeMounts:
+{% if job.evalEnabled | default('true') | lower == 'true' %}
             - name: docker-socket
               mountPath: /dind-socket
+{% endif %}
             - name: config-volume
               mountPath: /app/swe-bench/swe_lite_ra_aid/config.py
               subPath: config.py
+{% if job.evalEnabled | default('true') | lower == 'true' %}
         - name: dind-daemon
           image: docker:20.10-dind
           securityContext:
@@ -125,4 +133,5 @@ spec:
               mountPath: /dind-socket
             - name: docker-storage
               mountPath: /var/lib/docker
+{% endif %}
       restartPolicy: Never
