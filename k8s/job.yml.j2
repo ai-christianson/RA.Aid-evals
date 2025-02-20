@@ -48,6 +48,8 @@ spec:
           env:
             - name: PYTHONUNBUFFERED
               value: "1"
+            - name: ENABLE_EVAL
+              value: "{{ job.enable_eval | default('true') }}"
             - name: IMAGE_NAME
               value: "{{ image.repository }}"
             - name: IMAGE_TAG

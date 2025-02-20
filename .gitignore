@@ -24,3 +24,4 @@ logs/
 # Kubernetes
 k8s/values.yaml
 /k8s/config.py
+.aider*
