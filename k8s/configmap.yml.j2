@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: swe-bench-config
+  name: {{ job.name }}-{{ lookup('env', 'RUN_ID') }}
   namespace: {{ job.namespace }}
 data:
   config.py: |

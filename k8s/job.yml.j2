@@ -31,7 +31,7 @@ spec:
 {% endif %}
         - name: config-volume
           configMap:
-            name: swe-bench-config
+            name: {{ job.name }}-{{ lookup('env', 'RUN_ID') }}-config
       containers:
         - name: ra-aid-eval
           image: {{ image.repository }}:{{ image.tag }}
