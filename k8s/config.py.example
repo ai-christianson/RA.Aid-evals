@@ -1,10 +1,92 @@
 """Configuration constants for RA-AID."""
+import os
 from pathlib import Path
+
+# Get batch size from environment with default of 50
+BATCH_SIZE = int(os.getenv("BATCH_SIZE", "50"))
+
+# Get total number of tasks from environment
+NUM_TASKS = int(os.getenv("NUM_TASKS", str(len(MASTER_TASKS))))
+
+# Verify configuration matches
+assert len(MASTER_TASKS) == NUM_TASKS, f"MASTER_TASKS length ({len(MASTER_TASKS)}) must exactly match NUM_TASKS ({NUM_TASKS})"
+
+print(f"Batch Size: {BATCH_SIZE}")
+print(f"Total Tasks: {NUM_TASKS}")
 
 # Timeout Configuration (in seconds)
 TIMEOUT = 45 * 60  # 45 minutes
 
+# Batch processing configuration
+BATCH_SIZE = 50  # Number of tasks per batch
+
 # RA-AID Configuration
+# Master list of all tasks to process
+MASTER_TASKS = [
+    "scikit-learn__scikit-learn-25500",
+    "sympy__sympy-18189",
+    "psf__requests-2317",
+    "django__django-11019",
+    "sympy__sympy-13146",
+    "sympy__sympy-12171",
+    "scikit-learn__scikit-learn-13779",
+    "django__django-16379",
+    "astropy__astropy-7746",
+    "pytest-dev__pytest-6116",
+    "sympy__sympy-13480",
+    "django__django-13551",
+    "sphinx-doc__sphinx-8595",
+    "django__django-12983",
+    "pytest-dev__pytest-8906",
+    "sphinx-doc__sphinx-8721",
+    "sympy__sympy-22005",
+    "sphinx-doc__sphinx-7738",
+    "pallets__flask-4992",
+    "pylint-dev__pylint-7228",
+    "django__django-14730",
+    "django__django-16595",
+    "sympy__sympy-15011",
+    "sympy__sympy-15308",
+    "django__django-16041",
+    "django__django-12856",
+    "sympy__sympy-20639",
+    "sympy__sympy-24066",
+    "pydata__xarray-4094",
+    "sympy__sympy-13647",
+    "django__django-11564",
+    "pylint-dev__pylint-7114",
+    "django__django-12286",
+    "django__django-11848",
+    "sphinx-doc__sphinx-8435",
+    "django__django-17087",
+    "django__django-10924",
+    "django__django-15347",
+    "django__django-13028",
+    "django__django-14534",
+    "django__django-15498",
+    "django__django-14667",
+    "sympy__sympy-21614",
+    "django__django-13660",
+    "django__django-14672",
+    "django__django-13768",
+    "sympy__sympy-13177",
+    "sympy__sympy-12454",
+    "django__django-16408",
+    "sympy__sympy-13031"
+]
+
+# Dynamic task assignment based on JOB_COMPLETION_INDEX
+job_index = int(os.getenv("JOB_COMPLETION_INDEX", "0"))
+start_idx = job_index * BATCH_SIZE
+end_idx = start_idx + BATCH_SIZE
+ONLY_TASKS = MASTER_TASKS[start_idx:end_idx]
+
+print(f"JOB_COMPLETION_INDEX: {job_index}")
+print(f"Processing batch {job_index + 1}")
+print(f"Tasks in this batch: {len(ONLY_TASKS)}")
+print(f"Task IDs: {ONLY_TASKS}")
+
+FILTER_REPOS = None
 
 # Note Deepseek V3 currently is really bad with ra-aid Langgraph tool calls
 # Although its cheaper, results should be much worse (compared to Sonnet 3.5),
@@ -41,11 +123,8 @@ MAX_ATTEMPTS = 3
 MAX_THREADS = 1
 
 # Default RA-AID version if detection fails
-DEFAULT_RA_AID_VERSION = "ra-aid 0.12.1"
+DEFAULT_RA_AID_VERSION = "ra-aid 0.14.1"
 
-# Task and Repository Filtering Configuration
-# Set to None to process all tasks/repos
-ONLY_TASKS = ["django__django-14155"]
 FILTER_REPOS = None
 
 # Submission checklist:

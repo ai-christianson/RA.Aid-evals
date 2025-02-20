@@ -4,6 +4,8 @@ metadata:
   name: {{ job.name }}
   namespace: {{ job.namespace }}
 spec:
+  completions: {{ (job.numTasks / job.batchSize) | round | int }}
+  parallelism: {{ job.parallelism | default(1) }}
   backoffLimit: {{ job.backoffLimit }}
   ttlSecondsAfterFinished: {{ job.ttlSecondsAfterFinished }}
   template:
@@ -85,6 +87,14 @@ spec:
               value: "standard"
             - name: AWS_MAX_ATTEMPTS
               value: "3"
+            - name: JOB_COMPLETION_INDEX
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['batch.kubernetes.io/job-completion-index']
+            - name: BATCH_SIZE
+              value: "{{ job.batchSize }}"
+            - name: NUM_TASKS
+              value: "{{ job.numTasks }}"
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:

@@ -1,6 +1,9 @@
 job:
   name: ra-aid-eval
   namespace: ra-aid-evals  # Namespace for evaluation jobs
+  batchSize: 50  # Number of tasks per batch
+  numTasks: 50  # Total number of tasks to process
+  parallelism: 10
   nodeAffinity:
     zone: us-east-dc-cygnus  # Zone for node scheduling
   resources:
