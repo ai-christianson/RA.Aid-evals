@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ job.name }}
+  name: {{ job.name }}-{{ lookup('env', 'RUN_ID') }}
   namespace: {{ job.namespace }}
 spec:
   completions: {{ (job.numTasks / job.batchSize) | round | int }}
@@ -49,7 +49,7 @@ spec:
               cpu: {{ job.resources.limits.cpu }}
           envFrom:
             - secretRef:
-                name: api-keys
+                name: {{ secret_name }}
           env:
             - name: PYTHONUNBUFFERED
               value: "1"
@@ -64,18 +64,23 @@ spec:
             - name: ANTHROPIC_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: ra-aid-secrets
+                  name: {{ secret_name }}
                   key: anthropic_api_key
             - name: OPENAI_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: ra-aid-secrets
+                  name: {{ secret_name }}
                   key: openai_api_key
             - name: TAVILY_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: ra-aid-secrets
+                  name: {{ secret_name }}
                   key: tavily_api_key
+            - name: OPENROUTER_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ secret_name }}
+                  key: openrouter_api_key
             - name: S3_ENABLED
               value: "{{ (s3.enabled | default(false)) | lower }}"
             - name: S3_BUCKET_NAME
@@ -94,6 +99,11 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.annotations['batch.kubernetes.io/job-completion-index']
+            - name: RUN_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ secret_name }}
+                  key: run_id
             - name: BATCH_SIZE
               value: "{{ job.batchSize }}"
             - name: NUM_TASKS
@@ -101,13 +111,13 @@ spec:
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
-                  name: ra-aid-secrets
+                  name: {{ secret_name }}
                   key: aws_access_key_id
                   optional: true
             - name: AWS_SECRET_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
-                  name: ra-aid-secrets
+                  name: {{ secret_name }}
                   key: aws_secret_access_key
                   optional: true
 {% if job.evalEnabled | default('true') | lower == 'true' %}

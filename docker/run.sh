@@ -34,9 +34,8 @@ if [ "${S3_ENABLED}" = "true" ]; then
     export AWS_MAX_ATTEMPTS=3
 fi
 
-# Generate timestamp and run directory path
-TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)
-RUN_DIR="${S3_PATH_PREFIX}/runs/${IMAGE_TAG}-${TIMESTAMP}"
+# Set run directory path using RUN_ID
+RUN_DIR="${S3_PATH_PREFIX}/runs/${IMAGE_TAG}-${RUN_ID}"
 
 # Create metadata file
 generate_metadata > metadata.json

@@ -62,7 +62,6 @@ BATCH_SIZE = int(os.getenv("BATCH_SIZE", "50"))
 # Get total number of tasks from environment or use the full length of MASTER_TASKS
 NUM_TASKS = int(os.getenv("NUM_TASKS", str(len(MASTER_TASKS))))
 
-# Verify configuration matches
 assert len(MASTER_TASKS) == NUM_TASKS, (
     f"MASTER_TASKS length ({len(MASTER_TASKS)}) must exactly match NUM_TASKS ({NUM_TASKS})"
 )

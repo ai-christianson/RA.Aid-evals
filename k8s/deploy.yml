@@ -15,6 +15,7 @@
           - lookup('env', 'OPENAI_API_KEY') | length > 0
           - lookup('env', 'TAVILY_API_KEY') | length > 0
           - lookup('env', 'OPENROUTER_API_KEY') | length > 0
+          - lookup('env', 'RUN_ID') | length > 0
           - not (s3.enabled | bool) or (lookup('env', 'AWS_ACCESS_KEY_ID') | length > 0 and lookup('env', 'AWS_SECRET_ACCESS_KEY') | length > 0)
         fail_msg: |
           Missing required environment variables. Please ensure the following are set:
@@ -22,6 +23,7 @@
           - OPENAI_API_KEY
           - TAVILY_API_KEY
           - OPENROUTER_API_KEY
+          - RUN_ID
           {% if s3.enabled | bool %}
           - AWS_ACCESS_KEY_ID
           - AWS_SECRET_ACCESS_KEY
@@ -37,21 +39,56 @@
           metadata:
             name: "{{ job.namespace }}"
 
-    - name: Create API key secrets from environment variables
+    - name: Create unique names
+      ansible.builtin.set_fact:
+        job_full_name: "{{ job.name }}-{{ lookup('env', 'RUN_ID') }}"
+        secret_name: "{{ job.name }}-{{ lookup('env', 'RUN_ID') }}"
+
+    - name: Create the Kubernetes job
+      kubernetes.core.k8s:
+        state: present
+        template: "job.yml.j2"
+      register: job_result
+
+    - name: Create Kubernetes secret with API keys
       kubernetes.core.k8s:
         state: present
         definition:
           apiVersion: v1
           kind: Secret
           metadata:
-            name: api-keys
+            name: "{{ secret_name }}"
+            namespace: "{{ job.namespace }}"
+            ownerReferences:
+            - apiVersion: batch/v1
+              kind: Job
+              name: "{{ job_full_name }}"
+              uid: "{{ job_result.result.metadata.uid }}"
+              blockOwnerDeletion: true
+              controller: true
+          type: Opaque
+          stringData:
+            anthropic_api_key: "{{ lookup('env', 'ANTHROPIC_API_KEY') }}"
+            openai_api_key: "{{ lookup('env', 'OPENAI_API_KEY') }}"
+            tavily_api_key: "{{ lookup('env', 'TAVILY_API_KEY') }}"
+            openrouter_api_key: "{{ lookup('env', 'OPENROUTER_API_KEY') }}"
+            run_id: "{{ lookup('env', 'RUN_ID') }}"
+      when: true
+
+    - name: Add S3 credentials to secret
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: "{{ secret_name }}"
             namespace: "{{ job.namespace }}"
           type: Opaque
           stringData:
-            ANTHROPIC_API_KEY: "{{ lookup('env', 'ANTHROPIC_API_KEY') }}"
-            OPENAI_API_KEY: "{{ lookup('env', 'OPENAI_API_KEY') }}"
-            TAVILY_API_KEY: "{{ lookup('env', 'TAVILY_API_KEY') }}"
-            OPENROUTER_API_KEY: "{{ lookup('env', 'OPENROUTER_API_KEY') }}"
+            aws_access_key_id: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+            aws_secret_access_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+      when: s3.enabled | bool
 
     - name: Create S3 secrets from environment variables
       kubernetes.core.k8s:
@@ -95,8 +132,3 @@
       kubernetes.core.k8s:
         state: present
         definition: "{{ lookup('template', 'configmap.yml.j2') | from_yaml }}"
-
-    - name: Deploy evaluation job
-      kubernetes.core.k8s:
-        state: present
-        template: "job.yml.j2"
