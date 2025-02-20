@@ -12,6 +12,7 @@ job:
       cpu: "4"
   backoffLimit: 2  # Number of retries before considering job as failed
   ttlSecondsAfterFinished: 3600  # Cleanup completed jobs after 1 hour
+  evalEnabled: true  # Set to true to run evaluations after predictions
 
 image:
   # These will be overridden by the actual values from your build
