@@ -25,7 +25,7 @@ SWE_BENCH_ASSETS_DIR = $(DOCKER_ASSETS_DIR)/swe-bench
 clean-assets:
 	rm -rf $(DOCKER_ASSETS_DIR)
 
-sync-local-ra-aid:
+sync-local-ra-aid: clean-assets
 ifneq ($(RAAID_LOCAL_DIR),)
 	mkdir -p $(RA_AID_ASSETS_DIR)
 	rsync -av --delete \
@@ -36,13 +36,16 @@ ifneq ($(RAAID_LOCAL_DIR),)
 		--exclude '*.pyd' \
 		--exclude '.pytest_cache' \
 		--exclude '*.egg-info' \
-		--exclude 'logs' \
+		--exclude 'logs/*' \
+		--exclude 'predictions/' \
+		--exclude 'ra-aid-model.ra_aid_eval.json' \
 		--exclude '.venv' \
 		--exclude 'htmlcov' \
 		$(RAAID_LOCAL_DIR)/ $(RA_AID_ASSETS_DIR)/
+	mkdir -p $(RA_AID_ASSETS_DIR)/logs
 endif
 
-sync-local-swe-bench:
+sync-local-swe-bench: clean-assets
 ifneq ($(RAAID_SWE_BENCH_LOCAL_DIR),)
 	mkdir -p $(SWE_BENCH_ASSETS_DIR)
 	rsync -av --delete \
@@ -53,11 +56,14 @@ ifneq ($(RAAID_SWE_BENCH_LOCAL_DIR),)
 		--exclude '*.pyd' \
 		--exclude '.pytest_cache' \
 		--exclude '*.egg-info' \
+		--exclude 'logs/*' \
+		--exclude 'predictions/' \
+		--exclude 'ra-aid-model.ra_aid_eval.json' \
+		--exclude '.venv' \
 		--exclude 'repos' \
 		--exclude 'repos/*' \
-		--exclude 'logs' \
-		--exclude '.venv' \
 		$(RAAID_SWE_BENCH_LOCAL_DIR)/ $(SWE_BENCH_ASSETS_DIR)/
+	mkdir -p $(SWE_BENCH_ASSETS_DIR)/logs
 endif
 
 patch-swe-bench-pyproject:
