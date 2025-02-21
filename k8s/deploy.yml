@@ -68,11 +68,11 @@
               controller: true
           type: Opaque
           stringData:
-            anthropic_api_key: "{{ lookup('env', 'ANTHROPIC_API_KEY') }}"
-            openai_api_key: "{{ lookup('env', 'OPENAI_API_KEY') }}"
-            tavily_api_key: "{{ lookup('env', 'TAVILY_API_KEY') }}"
-            openrouter_api_key: "{{ lookup('env', 'OPENROUTER_API_KEY') }}"
-            run_id: "{{ lookup('env', 'RUN_ID') }}"
+            ANTHROPIC_API_KEY: "{{ lookup('env', 'ANTHROPIC_API_KEY') }}"
+            OPENAI_API_KEY: "{{ lookup('env', 'OPENAI_API_KEY') }}"
+            TAVILY_API_KEY: "{{ lookup('env', 'TAVILY_API_KEY') }}"
+            OPENROUTER_API_KEY: "{{ lookup('env', 'OPENROUTER_API_KEY') }}"
+            RUN_ID: "{{ lookup('env', 'RUN_ID') }}"
       when: true
 
     - name: Add S3 credentials to secret
@@ -86,8 +86,8 @@
             namespace: "{{ job.namespace }}"
           type: Opaque
           stringData:
-            aws_access_key_id: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
-            aws_secret_access_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+            AWS_ACCESS_KEY_ID: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+            AWS_SECRET_ACCESS_KEY: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
       when: s3.enabled | bool
 
     - name: Create S3 secrets from environment variables
@@ -101,12 +101,12 @@
             namespace: "{{ job.namespace }}"
           type: Opaque
           stringData:
-            aws_access_key_id: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') | default('', true) }}"
-            aws_secret_access_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') | default('', true) }}"
-            anthropic_api_key: "{{ lookup('env', 'ANTHROPIC_API_KEY') }}"
-            openai_api_key: "{{ lookup('env', 'OPENAI_API_KEY') }}"
-            tavily_api_key: "{{ lookup('env', 'TAVILY_API_KEY') }}"
-            openrouter_api_key: "{{ lookup('env', 'OPENROUTER_API_KEY') }}"
+            AWS_ACCESS_KEY_ID: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') | default('', true) }}"
+            AWS_SECRET_ACCESS_KEY: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') | default('', true) }}"
+            ANTHROPIC_API_KEY: "{{ lookup('env', 'ANTHROPIC_API_KEY') }}"
+            OPENAI_API_KEY: "{{ lookup('env', 'OPENAI_API_KEY') }}"
+            TAVILY_API_KEY: "{{ lookup('env', 'TAVILY_API_KEY') }}"
+            OPENROUTER_API_KEY: "{{ lookup('env', 'OPENROUTER_API_KEY') }}"
       when: s3.enabled | bool
 
     - name: Check if config.py exists

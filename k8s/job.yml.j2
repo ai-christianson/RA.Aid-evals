@@ -65,22 +65,22 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ secret_name }}
-                  key: anthropic_api_key
+                  key: ANTHROPIC_API_KEY
             - name: OPENAI_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{ secret_name }}
-                  key: openai_api_key
+                  key: OPENAI_API_KEY
             - name: TAVILY_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{ secret_name }}
-                  key: tavily_api_key
+                  key: TAVILY_API_KEY
             - name: OPENROUTER_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{ secret_name }}
-                  key: openrouter_api_key
+                  key: OPENROUTER_API_KEY
             - name: S3_ENABLED
               value: "{{ (s3.enabled | default(false)) | lower }}"
             - name: S3_BUCKET_NAME
@@ -103,7 +103,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ secret_name }}
-                  key: run_id
+                  key: RUN_ID
             - name: BATCH_SIZE
               value: "{{ job.batchSize }}"
             - name: NUM_TASKS
@@ -112,13 +112,13 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ secret_name }}
-                  key: aws_access_key_id
+                  key: AWS_ACCESS_KEY_ID
                   optional: true
             - name: AWS_SECRET_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{ secret_name }}
-                  key: aws_secret_access_key
+                  key: AWS_SECRET_ACCESS_KEY
                   optional: true
 {% if job.evalEnabled | default('true') | lower == 'true' %}
             - name: DOCKER_HOST

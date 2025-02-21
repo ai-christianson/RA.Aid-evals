@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ job.name }}-{{ lookup('env', 'RUN_ID') }}
+  name: {{ job.name }}-{{ lookup('env', 'RUN_ID') }}-config
   namespace: {{ job.namespace }}
 data:
   config.py: |
